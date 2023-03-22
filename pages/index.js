@@ -1,87 +1,87 @@
-import React from 'react';
-import { Box, Button, createTheme, CssBaseline, ThemeProvider, Typography, useTheme, Grid, TextField, Paper, styled } from '@mui/material';
+import * as React from 'react';
+import { styled } from '@mui/material/styles';
+import { Formik, Field, Form, ErrorMessage } from 'formik';
+import * as Yup from 'yup';
+import Paper from '@mui/material/Paper';
+import { Button, Grid, TextField } from '@mui/material';
 
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: '#00FF00',
-    },
-
-    secondary: {
-      light: '#0000FF',
-      main: '#0000FF',
-      contrastText: '#ffcc00',
-      mode: 'dark',
-    },
-    custom: {
-      light: '#ffa726',
-      main: '#f57c00',
-      dark: '#ef6c00',
-      contrastText: 'rgba(0, 0, 0, 0.87)',
-    },
-  },
-});
-
-const User = styled(Paper)(({ theme }) => ({
+const Item = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(1),
-  height: "100vh",
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-}))
+  textAlign: 'center',
+  display:'flex',
+  justifyContent:'center',
+  // height:'100vh',
+  alignItems:'center'
+}));
 
-const StyledGrid = styled("div")(() => ({
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  justifyContent: "center"
-}))
-
-const Styledbutton = styled('button')(() => ({
-  color: 'blue',
-  backgroundColor: 'white',
-  padding: '10px',
-  borderRadius: '10px',
-  width: '500px'
-}))
-
-const index = () => {
+export default function BasicGrid() {
   return (
-    // <ThemeProvider theme={theme}>
-    //   <Typography sx={{color:theme.palette.secondary.dark}}>hello world</Typography>
-    //   <Typography sx={{color:theme.palette.primary.light}}>hello world</Typography>
-    //   <CssBaseline />
-    //   <main>dark mode</main>
-    //   <Button variant="contained" color="secondary">Success</Button>
-    //   <Button variant="contained">Error</Button>
-    // </ThemeProvider>
 
-    <>
-      <User>
-        <Grid container xs={12} md={6} >
-          <Grid item xs={12} md={4}>
-            <TextField label="firstname" />
+    <Formik
+      initialValues={{
+        firstName: '',
+        lastName: '',
+        email: '',
+        password: '',
+        confirmpassword: ''
+      }}
+
+      validationSchema={Yup.object({
+        firstName: Yup.string()
+          .max(15, 'Must be 15 characters or less')
+          .required('Required'),
+
+        lastName: Yup.string()
+          .max(20, 'Must be 20 characters or less')
+          .required('Required'),
+
+        email: Yup.string().email('Invalid email address').required('Required'),
+
+        password: Yup.string()
+          .min(6, 'Password must be at least 6 charaters')
+          .required('Password is required'),
+
+        confirmpassword: Yup.string()
+          .oneOf([Yup.ref('password'), null], 'Password must match')
+          .required('Confirm password is required'),
+      })}
+
+      onSubmit={(values, { setSubmitting }) => {
+        setTimeout(() => {
+          alert(JSON.stringify(values, null, 2));
+          setSubmitting(false);
+        }, 100);
+      }}>
+
+      {({ errors, touched }) => (
+
+        <Form>
+          <Grid container md={6}>
+
+            <Grid item xs={8} md={6}>
+              <Item><Field as={TextField} fullWidth label="FirstName" name="firstName" type="text" error={touched.firstName && Boolean(errors.firstName)} helperText={touched.firstName && errors.firstName} /></Item>
+            </Grid>
+            <Grid item xs={4} md={6}>
+              <Item><Field as={TextField} fullWidth label="LastName" name="lastName" type="text" error={touched.lastName && Boolean(errors.lastName)} helperText={touched.lastName && errors.lastName} /></Item>
+            </Grid>
+            <Grid item xs={4} md={12}>
+              <Item><Field as={TextField} fullWidth label="Email" name="email" type="email" error={touched.email && Boolean(errors.email)} helperText={touched.email && errors.email} /></Item>
+            </Grid>
+            <Grid item xs={8} md={6}>
+              <Item><Field as={TextField} fullWidth label="Password" name="password" type="password" error={touched.password && Boolean(errors.password)} helperText={touched.password && errors.password} /></Item>
+            </Grid>
+            <Grid item xs={8} md={6}>
+              <Item><Field as={TextField} fullWidth label="Confirmpassword" name="confirmpassword" type="password" error={touched.confirmpassword && Boolean(errors.confirmpassword)} helperText={touched.confirmpassword && errors.confirmpassword} /></Item>
+            </Grid>
+            <Grid item xs={8} md={12}>
+              <Item><Button fullWidth variant='outlined' type="submit">Signup</Button></Item>
+            </Grid>
+
           </Grid>
-          <Grid item xs={12} md={4}>
-            <TextField label="lastname" />
-          </Grid>
-          <Grid item xs={12} md={4}>
-            <TextField label="email" />
-          </Grid>
-          <Grid>
-            <Button variant='contained'>Submit</Button>
-          </Grid>
-        </Grid>
-      </User>
-
-      <Styledbutton>
-        hello
-      </Styledbutton>
+        </Form>
+      )}
 
 
-    </>
-
-  )
+    </Formik>
+  );
 }
-
-export default index;
